@@ -4,10 +4,12 @@ import (
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
-	"net/http"
 	"math/rand"
-	"strings"
+	"net/http"
 	"os"
+	"strconv"
+	"strings"
+	"time"
 )
 
 func AddSpace() {
@@ -66,22 +68,62 @@ func main() {
 		}
 	}
 
+	var hearts int
+	hearts = 10
+
+	var letterGuessedCorrectly bool
+	letterGuessedCorrectly = true
+
+	var guessingStarted bool
+	guessingStarted = false
+
 	for {
 		AddSpace()
+		if guessingStarted {
+			if letterGuessedCorrectly {
+				fmt.Println("You guessed!")
+			} else {
+				fmt.Println("Wrong answer!")
+			}
+		}
+		guessingStarted = true
+		fmt.Println("HEARTS [" + strconv.Itoa(hearts) + "]")
 		fmt.Println("\n" + outputString + "\n")
 
 		var answer string
 		fmt.Println("Guess letter: ")
 		fmt.Print("Type letter >>>")
 		fmt.Scan(&answer)
-		
+
 		// TASK: handle some errors related to wrong letter or wrong char
-		
-		// FUNCTION TO REPLACE UNDERSCORES WITH LETTERS IF GUESSED CORRECTLY
-		for i := 0; i < len(pokemonToGuess); i++ {
-			pokemonToGuessLetter := string(pokemonToGuess[i])
-			if answer == pokemonToGuessLetter {
-				outputString = outputString[: i * 2] + answer + outputString[i * 2 + 1 :]
+
+		// CHECK IF LETTER IN WORD TO GUESS
+		if strings.Index(pokemonToGuess, answer) > -1 {
+			letterGuessedCorrectly = true
+			// FUNCTION TO REPLACE UNDERSCORES WITH LETTERS IF GUESSED CORRECTLY
+			// TASK: replace it with function
+			for i := 0; i < len(pokemonToGuess); i++ {
+				pokemonToGuessLetter := string(pokemonToGuess[i])
+				if answer == pokemonToGuessLetter {
+					outputString = outputString[:i*2] + answer + outputString[i*2+1:]
+				}
+			}
+		} else {
+			letterGuessedCorrectly = false
+			hearts -= 1
+
+			fmt.Println("Wrong letter!")
+
+			if hearts == 0 {
+				fmt.Print("You lost")
+				time.Sleep(1)
+				fmt.Print(".")
+				time.Sleep(1)
+				fmt.Print(".")
+				time.Sleep(1)
+				fmt.Print(".")
+				fmt.Println("Maybe try another attempt!")
+				os.Exit(0)
 			}
 		}
 
